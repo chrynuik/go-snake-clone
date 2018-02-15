@@ -2,9 +2,7 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
 )
 
 func Start(res http.ResponseWriter, req *http.Request) {
@@ -36,16 +34,8 @@ func Move(res http.ResponseWriter, req *http.Request) {
 	}
 	dump(data)
 
-	directions := []string{
-		"up",
-		"down",
-		"left",
-		"right",
-	}
-
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-
 	respond(res, MoveResponse{
-		Move: directions[r.Intn(4)],
+		// Move: directions[r.Intn(4)],
+		Move: handleMove(),
 	})
 }
