@@ -32,10 +32,8 @@ func Move(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("Bad move request: %v", err)
 	}
-	dump(data)
 
 	respond(res, MoveResponse{
-		// Move: directions[r.Intn(4)],
-		Move: handleMove(),
+		Move: handleMove(data),
 	})
 }
