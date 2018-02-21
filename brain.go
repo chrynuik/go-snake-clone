@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 func handleMove(data *MoveRequest) string {
 	directions := []string{
 		"up",
@@ -32,5 +36,10 @@ func handleMove(data *MoveRequest) string {
 		}
 	}
 
+	board := Graph{}
+	board.create(20, 20)
+
+	fmt.Println(board)
+	// dump(astar(board))
 	return Move
 }
