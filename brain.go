@@ -37,9 +37,9 @@ func handleMove(data *MoveRequest) string {
 	}
 
 	board := Graph{}
-	board.create(20, 20)
+	board.create(data)
 
 	fmt.Println(board)
-	// dump(astar(board))
+	fmt.Println(astar(board, Tile{X: Head.X, Y: Head.Y}, Tile{X: Food.X, Y: Food.Y}))
 	return Move
 }
