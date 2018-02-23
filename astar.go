@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"math"
-)
+import "container/heap"
 
 // TileCost is tile cost
 type TileCost struct {
@@ -13,76 +10,78 @@ type TileCost struct {
 
 // Determines the approximate cost going from one cord to another
 func hueristic(start Tile, end Tile) int {
-	return int(math.Abs(float64(start.X-end.X)) + math.Abs(float64(start.Y-end.Y)))
+	xVal := start.X - end.X
+	yVal := start.Y - end.Y
+
+	if xVal < 0 {
+		xVal = -1 * xVal
+	}
+
+	if yVal < 0 {
+		yVal = -1 * yVal
+	}
+
+	heuristic := xVal + yVal
+
+	return heuristic
 }
 
 func astar(g Graph, start Tile, goal Tile) []Tile {
-	pq := make(PriorityQueue, 0)
-	currentTile := start
-	visitedTiles := []TileCost{}
+	toVisit := PriorityQueue{}
+	heap.Init(&toVisit)
 
-	firstItem := &Item{
+	item := &Item{
 		priority: 0,
-		index:    0,
 		tile:     start,
 	}
 
-	// heap.Push(&pq, firstItem)
-	pq.Push(firstItem)
+	heap.Push(&toVisit, item)
 
-	fmt.Println("HELLO?")
-	fmt.Println(pq.Len())
+	cameFrom := make(map[Tile]Tile)
+	costSoFar := make(map[Tile]int)
 
-	// fmt.Println("queue", pq[0])
-	for pq.Len() > 0 {
-		currentTile = pq[0].tile
+	costSoFar[start] = 0
 
-		if currentTile == goal {
+	for toVisit.Len() > 0 {
+		item := heap.Pop(&toVisit).(*Item)
+
+		if item.tile == goal {
 			break
 		}
 
-		possibleDirections := g.neighbors(currentTile)
-		fmt.Println("POSSIBLE DIRECTION", possibleDirections)
+		neighbors := g.neighbors(item.tile)
 
-		for index, i := range possibleDirections {
+		for _, neighbor := range neighbors {
+			newCost := costSoFar[item.tile] + g.cost(neighbor)
+			costSoFarNeighbor, ok := costSoFar[neighbor]
 
-			fmt.Println("==============")
-			fmt.Println("index", index)
+			if !ok || newCost < costSoFarNeighbor {
+				costSoFar[neighbor] = newCost
+				newItem := &Item{
+					priority: newCost + hueristic(neighbor, goal),
+					tile:     neighbor,
+				}
 
-			// newCost := g.cost(i) + g.cost(goal)
-			newCost := g.cost(currentTile) + g.cost(i)
-			fmt.Println("newCost", newCost)
-			fmt.Println("queue length", pq.Len())
-
-			// if !contains(visitedTiles, i) || newCost < getCost(visitedTiles, i) {
-			fmt.Println("WERE IN THE LOOP")
-			visitedTiles = append(visitedTiles, TileCost{tile: i, cost: newCost})
-			priority := newCost + hueristic(currentTile, i)
-			fmt.Println("priority", priority)
-
-			toPush := &Item{
-				tile:     i,
-				priority: priority,
+				heap.Push(&toVisit, newItem)
+				cameFrom[neighbor] = item.tile
 			}
-			// heap.Push(&pq, toPush)
-			pq.Push(toPush)
-
-			// }
-			// fmt.Println("start", start)
-			// fmt.Println(g.cost(i))
-			// fmt.Println(newCost)
 		}
-
 	}
 
-	path := make([]Tile, 1)
-	path[0] = Tile{
-		X: 1,
-		Y: 1,
+	tile := goal
+	path := make([]Tile, 0)
+
+	for tile != start {
+		if val, ok := cameFrom[tile]; ok {
+			path = append(path, tile)
+			tile = val
+		} else {
+			path = make([]Tile, 0)
+			break
+		}
 	}
 
 	return path
-
 }
 
 func contains(list []TileCost, a Tile) bool {
