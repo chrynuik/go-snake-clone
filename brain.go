@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
 )
 
@@ -12,16 +13,37 @@ func handleMove(data *MoveRequest) string {
 		"right",
 	}
 
-	Food := data.Food[0]
+	Food := data.Food
+
 	Snake := data.You
 	Body := Snake.Body
 	Head := Body[0]
+	Tail := Body[len(Body)-1]
+
+	Health := Snake.Health
+
+	closestFood := PriorityQueue{}
+
+	for _, Morsel := range Food {
+		newItem := &Item{
+			priority: hueristic(Tile{X: Head.X, Y: Head.Y}, Tile{X: Morsel.X, Y: Morsel.Y}),
+			tile:     Tile{X: Morsel.X, Y: Morsel.Y},
+		}
+
+		heap.Push(&closestFood, newItem)
+	}
+
+	Goal := heap.Pop(&closestFood).(*Item).tile
+
+	if Health < 99 && Health > 50 {
+		Goal = Tile{X: Tail.X, Y: Tail.Y}
+	}
 
 	board := Graph{}
 	board.create(data)
 
 	fmt.Println(board)
-	path := astar(board, Tile{X: Head.X, Y: Head.Y}, Tile{X: Food.X, Y: Food.Y})
+	path := astar(board, Tile{X: Head.X, Y: Head.Y}, Tile{X: Goal.X, Y: Goal.Y})
 
 	nextMove := path[len(path)-1]
 	differenceX := nextMove.X - Head.X
