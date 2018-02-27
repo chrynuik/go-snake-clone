@@ -18,6 +18,7 @@ func handleMove(data *MoveRequest) string {
 	Us := data.You
 	Body := Us.Body
 	Head := Body[0]
+	Start := Point{X: Head.X, Y: Head.Y}
 	Tail := Body[len(Body)-1]
 
 	Health := Us.Health
@@ -37,7 +38,7 @@ func handleMove(data *MoveRequest) string {
 
 	Goal := heap.Pop(&closestFood).(*Item).point
 
-	if Health < 99 && Health > 50 {
+	if Health < 99 && Health > 50 && hueristic(Start, Goal) > 9 {
 		Goal = Point{X: Tail.X, Y: Tail.Y}
 	}
 
