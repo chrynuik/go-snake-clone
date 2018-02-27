@@ -26,6 +26,7 @@ func handleMove(data *MoveRequest) string {
 	AllSnakes := data.Snakes
 
 	closestFood := PriorityQueue{}
+	closestEnemy := PriorityQueue{}
 
 	for _, Morsel := range Food {
 		newItem := &Item{
@@ -36,11 +37,7 @@ func handleMove(data *MoveRequest) string {
 		heap.Push(&closestFood, newItem)
 	}
 
-	Goal := heap.Pop(&closestFood).(*Item).point
-
-	if Health < 99 && Health > 50 && hueristic(Start, Goal) > 9 {
-		Goal = Point{X: Tail.X, Y: Tail.Y}
-	}
+	nextFood := heap.Pop(&closestFood).(*Item)
 
 	board := Graph{}
 	board.create(data)
@@ -52,6 +49,32 @@ func handleMove(data *MoveRequest) string {
 	fmt.Println("ATTACKABLE ENEMIES", attackableEnemies)
 
 	fmt.Println(board)
+
+	for _, Enemy := range enemyHeads {
+		EnemyCoords := Enemy.Coords
+
+		newItem := &Item{
+			priority: hueristic(Point{X: Head.X, Y: Head.Y}, Point{X: EnemyCoords.X, Y: EnemyCoords.Y}),
+			point:    Point{X: EnemyCoords.X, Y: EnemyCoords.Y},
+		}
+
+		heap.Push(&closestEnemy, newItem)
+	}
+
+	nextEnemy := heap.Pop(&closestFood).(*Item)
+
+	Goal := Point{}
+
+	if nextFood.priority > nextEnemy.priority {
+		Goal = nextEnemy.point
+	} else {
+		Goal = nextFood.point
+	}
+
+	if Health < 99 && Health > 50 && hueristic(Start, Goal) > 6 {
+		Goal = Point{X: Tail.X, Y: Tail.Y}
+	}
+
 	path := astar(board, Point{X: Head.X, Y: Head.Y}, Point{X: Goal.X, Y: Goal.Y})
 
 	nextMove := path[len(path)-1]
