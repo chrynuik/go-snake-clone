@@ -15,12 +15,14 @@ func handleMove(data *MoveRequest) string {
 
 	Food := data.Food
 
-	Snake := data.You
-	Body := Snake.Body
+	Us := data.You
+	Body := Us.Body
 	Head := Body[0]
 	Tail := Body[len(Body)-1]
 
-	Health := Snake.Health
+	Health := Us.Health
+
+	AllSnakes := data.Snakes
 
 	closestFood := PriorityQueue{}
 
@@ -41,6 +43,12 @@ func handleMove(data *MoveRequest) string {
 
 	board := Graph{}
 	board.create(data)
+
+	enemyHeads := getEnemyHeads(AllSnakes, Us)
+	attackableEnemies := getAttackableEnemies(enemyHeads, 6)
+
+	fmt.Println("ALL ENEMIES", enemyHeads)
+	fmt.Println("ATTACKABLE ENEMIES", attackableEnemies)
 
 	fmt.Println(board)
 	path := astar(board, Tile{X: Head.X, Y: Head.Y}, Tile{X: Goal.X, Y: Goal.Y})
