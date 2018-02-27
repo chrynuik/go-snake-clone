@@ -19,8 +19,8 @@ func Start(res http.ResponseWriter, req *http.Request) {
 		Color:          "#551A8B",
 		Name:           "The Snake Charmer",
 		HeadURL:        "http://orig03.deviantart.net/9027/f/2009/128/1/c/the_snake_charmer_by_cheatingly.jpg",
-		HeadType:       HEAD_PIXEL,
-		TailType:       TAIL_PIXEL,
+		HeadType:       HEAD_REGULAR,
+		TailType:       TAIL_REGULAR,
 		SecondaryColor: "#F7D3A2",
 	})
 }
