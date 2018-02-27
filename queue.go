@@ -9,7 +9,7 @@ type Item struct {
 	priority int // The priority of the item in the queue.
 	// The index is needed by update and is maintained by the heap.Interface methods.
 	index int // The index of the item in the heap.
-	tile  Tile
+	point Point
 }
 
 // A PriorityQueue implements heap.Interface and holds Items.
@@ -47,8 +47,8 @@ func (pq *PriorityQueue) Pop() interface{} {
 }
 
 // update modifies the priority and value of an Item in the queue.
-func (pq *PriorityQueue) update(item *Item, tile Tile, priority int) {
-	item.tile = tile
+func (pq *PriorityQueue) update(item *Item, point Point, priority int) {
+	item.point = point
 	item.priority = priority
 	heap.Fix(pq, item.index)
 }

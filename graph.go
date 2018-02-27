@@ -4,12 +4,6 @@ import (
 	"strconv"
 )
 
-// Tile is a struct
-type Tile struct {
-	X int
-	Y int
-}
-
 // Graph is a struct
 type Graph struct {
 	Width  int
@@ -44,31 +38,31 @@ func (g *Graph) create(data *MoveRequest) {
 
 }
 
-func (g Graph) isTileAccessible(tile Tile) bool {
+func (g Graph) isPointAccessible(point Point) bool {
 	// does it exist? on the board?
-	if tile.X < 0 || tile.X >= g.Width {
+	if point.X < 0 || point.X >= g.Width {
 		return false
-	} else if tile.Y < 0 || tile.Y >= g.Height {
+	} else if point.Y < 0 || point.Y >= g.Height {
 		return false
 	} else {
 		return true
 	}
 }
 
-func (g Graph) neighbors(tile Tile) []Tile {
+func (g Graph) neighbors(point Point) []Point {
 	// iterate over neighbors, is accesssible? return array of accessible neighbors
-	directions := [4]Tile{}
-	directions[0] = Tile{X: 1, Y: 0}
-	directions[1] = Tile{X: 0, Y: 1}
-	directions[2] = Tile{X: -1, Y: 0}
-	directions[3] = Tile{X: 0, Y: -1}
+	directions := [4]Point{}
+	directions[0] = Point{X: 1, Y: 0}
+	directions[1] = Point{X: 0, Y: 1}
+	directions[2] = Point{X: -1, Y: 0}
+	directions[3] = Point{X: 0, Y: -1}
 
-	results := []Tile{}
+	results := []Point{}
 
 	for _, direction := range directions {
-		neighbor := Tile{X: tile.X + direction.X, Y: tile.Y + direction.Y}
+		neighbor := Point{X: point.X + direction.X, Y: point.Y + direction.Y}
 
-		if g.isTileAccessible(neighbor) && g.cost(neighbor) != 9 {
+		if g.isPointAccessible(neighbor) && g.cost(neighbor) != 9 {
 			results = append(results, neighbor)
 		}
 	}
@@ -76,10 +70,10 @@ func (g Graph) neighbors(tile Tile) []Tile {
 	return results
 }
 
-func (g Graph) cost(direction Tile) int {
-	// the value in the tile
+func (g Graph) cost(direction Point) int {
+	// the value in the point
 
-	if g.isTileAccessible(direction) {
+	if g.isPointAccessible(direction) {
 		return g.Grid[direction.Y][direction.X]
 	}
 

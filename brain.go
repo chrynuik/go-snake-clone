@@ -28,17 +28,17 @@ func handleMove(data *MoveRequest) string {
 
 	for _, Morsel := range Food {
 		newItem := &Item{
-			priority: hueristic(Tile{X: Head.X, Y: Head.Y}, Tile{X: Morsel.X, Y: Morsel.Y}),
-			tile:     Tile{X: Morsel.X, Y: Morsel.Y},
+			priority: hueristic(Point{X: Head.X, Y: Head.Y}, Point{X: Morsel.X, Y: Morsel.Y}),
+			point:    Point{X: Morsel.X, Y: Morsel.Y},
 		}
 
 		heap.Push(&closestFood, newItem)
 	}
 
-	Goal := heap.Pop(&closestFood).(*Item).tile
+	Goal := heap.Pop(&closestFood).(*Item).point
 
 	if Health < 99 && Health > 50 {
-		Goal = Tile{X: Tail.X, Y: Tail.Y}
+		Goal = Point{X: Tail.X, Y: Tail.Y}
 	}
 
 	board := Graph{}
@@ -51,7 +51,7 @@ func handleMove(data *MoveRequest) string {
 	fmt.Println("ATTACKABLE ENEMIES", attackableEnemies)
 
 	fmt.Println(board)
-	path := astar(board, Tile{X: Head.X, Y: Head.Y}, Tile{X: Goal.X, Y: Goal.Y})
+	path := astar(board, Point{X: Head.X, Y: Head.Y}, Point{X: Goal.X, Y: Goal.Y})
 
 	nextMove := path[len(path)-1]
 	differenceX := nextMove.X - Head.X

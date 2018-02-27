@@ -2,14 +2,14 @@ package main
 
 import "container/heap"
 
-// TileCost is tile cost
-type TileCost struct {
-	tile Tile
-	cost int
+// PointCost is point cost
+type PointCost struct {
+	point Point
+	cost  int
 }
 
 // Determines the approximate cost going from one cord to another
-func hueristic(start Tile, end Tile) int {
+func hueristic(start Point, end Point) int {
 	xVal := start.X - end.X
 	yVal := start.Y - end.Y
 
@@ -26,57 +26,57 @@ func hueristic(start Tile, end Tile) int {
 	return heuristic
 }
 
-func astar(g Graph, start Tile, goal Tile) []Tile {
+func astar(g Graph, start Point, goal Point) []Point {
 	toVisit := PriorityQueue{}
 	heap.Init(&toVisit)
 
 	item := &Item{
 		priority: 0,
-		tile:     start,
+		point:    start,
 	}
 
 	heap.Push(&toVisit, item)
 
-	cameFrom := make(map[Tile]Tile)
-	costSoFar := make(map[Tile]int)
+	cameFrom := make(map[Point]Point)
+	costSoFar := make(map[Point]int)
 
 	costSoFar[start] = 0
 
 	for toVisit.Len() > 0 {
 		item := heap.Pop(&toVisit).(*Item)
 
-		if item.tile == goal {
+		if item.point == goal {
 			break
 		}
 
-		neighbors := g.neighbors(item.tile)
+		neighbors := g.neighbors(item.point)
 
 		for _, neighbor := range neighbors {
-			newCost := costSoFar[item.tile] + g.cost(neighbor)
+			newCost := costSoFar[item.point] + g.cost(neighbor)
 			costSoFarNeighbor, ok := costSoFar[neighbor]
 
 			if !ok || newCost < costSoFarNeighbor {
 				costSoFar[neighbor] = newCost
 				newItem := &Item{
 					priority: newCost + hueristic(neighbor, goal),
-					tile:     neighbor,
+					point:    neighbor,
 				}
 
 				heap.Push(&toVisit, newItem)
-				cameFrom[neighbor] = item.tile
+				cameFrom[neighbor] = item.point
 			}
 		}
 	}
 
-	tile := goal
-	path := make([]Tile, 0)
+	point := goal
+	path := make([]Point, 0)
 
-	for tile != start {
-		if val, ok := cameFrom[tile]; ok {
-			path = append(path, tile)
-			tile = val
+	for point != start {
+		if val, ok := cameFrom[point]; ok {
+			path = append(path, point)
+			point = val
 		} else {
-			path = make([]Tile, 0)
+			path = make([]Point, 0)
 			break
 		}
 	}
@@ -84,18 +84,18 @@ func astar(g Graph, start Tile, goal Tile) []Tile {
 	return path
 }
 
-func contains(list []TileCost, a Tile) bool {
+func contains(list []PointCost, a Point) bool {
 	for _, b := range list {
-		if b.tile == a {
+		if b.point == a {
 			return true
 		}
 	}
 	return false
 }
 
-func getCost(list []TileCost, a Tile) int {
+func getCost(list []PointCost, a Point) int {
 	for _, b := range list {
-		if b.tile == a {
+		if b.point == a {
 			return b.cost
 		}
 	}
