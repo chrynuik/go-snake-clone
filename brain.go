@@ -3,8 +3,6 @@ package main
 import (
 	"container/heap"
 	"fmt"
-
-	"github.com/fatih/color"
 )
 
 func handleMove(data *MoveRequest) string {
@@ -33,7 +31,6 @@ func handleMove(data *MoveRequest) string {
 	board.create(data)
 
 	pathToTail := astar(board, Point{X: Head.X, Y: Head.Y}, Point{X: Tail.X, Y: Tail.Y})
-	color.Magenta("Path to tail: ", pathToTail)
 	for _, Morsel := range Food {
 		newItem := &Item{
 			priority: hueristic(Point{X: Head.X, Y: Head.Y}, Point{X: Morsel.X, Y: Morsel.Y}),
