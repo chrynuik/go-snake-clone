@@ -77,7 +77,16 @@ func handleMove(data *MoveRequest) string {
 
 	path := astar(board, Point{X: Head.X, Y: Head.Y}, Point{X: Goal.X, Y: Goal.Y})
 
-	nextMove := path[len(path)-1]
+	var nextMove Point
+
+	if len(path) > 0 {
+		fmt.Println("There is food", path)
+		nextMove = path[len(path)-1]
+	} else {
+
+		fmt.Println("No food but neighbours")
+		nextMove = board.neighbors(Head)[0]
+	}
 	differenceX := nextMove.X - Head.X
 	differenceY := nextMove.Y - Head.Y
 
