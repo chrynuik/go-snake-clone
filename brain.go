@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/heap"
 	"fmt"
 )
 
@@ -14,37 +13,23 @@ func handleMove(data *MoveRequest) string {
 	}
 
 	Food := data.Food
-
 	Us := data.You
 	Body := Us.Body
 	Head := Body[0]
-	Start := Point{X: Head.X, Y: Head.Y}
 	Tail := Body[len(Body)-1]
-
 	Health := Us.Health
-
 	AllSnakes := data.Snakes
 
-	closestFood := PriorityQueue{}
-	closestEnemy := PriorityQueue{}
+	fmt.Println("Body length:", len(Body))
+
 	board := Graph{}
 	board.create(data)
 
-	pathToTail := astar(board, Point{X: Head.X, Y: Head.Y}, Point{X: Tail.X, Y: Tail.Y})
-	for _, Morsel := range Food {
-		newItem := &Item{
-			priority: hueristic(Point{X: Head.X, Y: Head.Y}, Point{X: Morsel.X, Y: Morsel.Y}),
-			point:    Point{X: Morsel.X, Y: Morsel.Y},
-		}
+	pathToTail := astar(board, Head, Tail)
 
-		if len(pathToTail) > 0 && Tail != Body[1] {
+	fmt.Println("Do we have a path to our tail", pathToTail)
 
-			fmt.Println("Pushing a morsel")
-			heap.Push(&closestFood, newItem)
-		}
-	}
-
-	nextFood := heap.Pop(&closestFood).(*Item)
+	nextFood := getFoodPath(Food, Us, pathToTail)
 
 	enemyHeads := getEnemyHeads(AllSnakes, Us)
 	attackableEnemies := getAttackableEnemies(enemyHeads, 6)
@@ -54,43 +39,39 @@ func handleMove(data *MoveRequest) string {
 
 	fmt.Println(board)
 
-	for _, Enemy := range enemyHeads {
-		EnemyCoords := Enemy.Coords
-
-		newItem := &Item{
-			priority: hueristic(Point{X: Head.X, Y: Head.Y}, Point{X: EnemyCoords.X, Y: EnemyCoords.Y}),
-			point:    Point{X: EnemyCoords.X, Y: EnemyCoords.Y},
-		}
-
-		heap.Push(&closestEnemy, newItem)
-	}
-
-	nextEnemy := heap.Pop(&closestFood).(*Item)
+	nextEnemy := getEnemyPath(attackableEnemies, Us)
 
 	Goal := Point{}
 
-	if nextFood.priority > nextEnemy.priority {
+	if nextFood != nil && nextEnemy != nil &&
+		nextFood.priority > nextEnemy.priority {
 		Goal = nextEnemy.point
-	} else {
+	} else if nextFood != nil {
 		Goal = nextFood.point
 	}
 
-	if Health < 99 && Health > 50 && hueristic(Start, Goal) > 4 {
-		Goal = Point{X: Tail.X, Y: Tail.Y}
+	if Health < 99 && Health > 50 && hueristic(Head, Goal) > 4 {
+		Goal = Tail
 	}
 
-	path := astar(board, Point{X: Head.X, Y: Head.Y}, Point{X: Goal.X, Y: Goal.Y})
+	path := astar(board, Head, Goal)
+
+	fmt.Println("PATH", len(path))
 
 	var nextMove Point
+
+	fmt.Println("Got to the neighbors")
 
 	if len(path) > 0 {
 		fmt.Println("There is food", path)
 		nextMove = path[len(path)-1]
 	} else {
-
 		fmt.Println("No food but neighbours")
 		nextMove = board.neighbors(Head)[0]
 	}
+
+	fmt.Println("NextMove", nextMove)
+
 	differenceX := nextMove.X - Head.X
 	differenceY := nextMove.Y - Head.Y
 
@@ -109,6 +90,8 @@ func handleMove(data *MoveRequest) string {
 	if differenceX == 1 {
 		return directions[3]
 	}
+
+	fmt.Println("Got to the end")
 
 	return directions[0]
 }
