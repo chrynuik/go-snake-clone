@@ -39,6 +39,14 @@ func handleMove(data *MoveRequest) string {
 
 	fmt.Println(board)
 
+	var isLongest bool
+
+	for _, snake := range enemyHeads {
+		if snake.Length < Us.Length {
+			isLongest = true
+		}
+	}
+
 	nextEnemy := getEnemyPath(attackableEnemies, Us)
 
 	Goal := Point{}
@@ -46,7 +54,7 @@ func handleMove(data *MoveRequest) string {
 	if nextFood != nil && nextEnemy != nil &&
 		nextFood.priority > nextEnemy.priority {
 		Goal = nextEnemy.point
-	} else if nextFood != nil {
+	} else if nextFood != nil && !isLongest {
 		Goal = nextFood.point
 	}
 

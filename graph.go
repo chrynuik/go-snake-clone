@@ -36,6 +36,10 @@ func (g *Graph) create(data *MoveRequest) {
 		}
 	}
 
+	if Snake.Health != 100 {
+		g.Grid[Tail.Y][Tail.X] = 1
+	}
+
 }
 
 func (g Graph) isPointAccessible(point Point) bool {
