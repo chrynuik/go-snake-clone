@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -11,7 +12,7 @@ type Graph struct {
 	Grid   [][]int
 }
 
-func (g *Graph) create(data *MoveRequest) {
+func (g *Graph) create(data *MoveRequest, enemyHeads []EnemyHead) {
 	g.Width = data.Width
 	g.Height = data.Height
 	g.Grid = make([][]int, g.Height)
@@ -33,6 +34,15 @@ func (g *Graph) create(data *MoveRequest) {
 			if Tail != Point && Point != Snake.Body[len(Snake.Body)-1] {
 				g.Grid[Point.Y][Point.X] = 9
 			}
+		}
+	}
+
+	for _, Snake := range enemyHeads {
+		s := g.neighbors(Snake.Coords)
+		for _, neighbor := range s {
+			fmt.Println("neighbor!!!", neighbor)
+			g.Grid[neighbor.Y][neighbor.X] = 3
+
 		}
 	}
 

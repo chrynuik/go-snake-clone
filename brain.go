@@ -22,8 +22,10 @@ func handleMove(data *MoveRequest) string {
 
 	fmt.Println("Body length:", len(Body))
 
+	enemyHeads := getEnemyHeads(AllSnakes, Us)
+
 	board := Graph{}
-	board.create(data)
+	board.create(data, enemyHeads)
 
 	pathToTail := astar(board, Head, Tail)
 
@@ -31,7 +33,6 @@ func handleMove(data *MoveRequest) string {
 
 	nextFood := getFoodPath(Food, Us, pathToTail)
 
-	enemyHeads := getEnemyHeads(AllSnakes, Us)
 	attackableEnemies := getAttackableEnemies(enemyHeads, Us.Length)
 
 	// fmt.Println("ALL ENEMIES", enemyHeads)
@@ -54,8 +55,10 @@ func handleMove(data *MoveRequest) string {
 	if nextFood != nil && nextEnemy != nil &&
 		nextFood.priority > nextEnemy.priority {
 		Goal = nextEnemy.point
-	} else if nextFood != nil && !isLongest {
-		Goal = nextFood.point
+	} else if nextFood != nil {
+		if !isLongest || Health > 50 {
+			Goal = nextFood.point
+		}
 	}
 
 	if Health < 99 && Health > 50 && hueristic(Head, Goal) > 4 {
@@ -75,7 +78,11 @@ func handleMove(data *MoveRequest) string {
 		nextMove = path[len(path)-1]
 	} else {
 		fmt.Println("No food but neighbours")
-		nextMove = board.neighbors(Head)[0]
+		if len(pathToTail) > 0 {
+			nextMove = pathToTail[len(pathToTail)-1]
+		} else {
+			nextMove = board.neighbors(Head)[0]
+		}
 	}
 
 	fmt.Println("NextMove", nextMove)
