@@ -32,7 +32,7 @@ func handleMove(data *MoveRequest) string {
 	nextFood := getFoodPath(Food, Us, pathToTail)
 
 	enemyHeads := getEnemyHeads(AllSnakes, Us)
-	attackableEnemies := getAttackableEnemies(enemyHeads, 6)
+	attackableEnemies := getAttackableEnemies(enemyHeads, Us.Length)
 
 	// fmt.Println("ALL ENEMIES", enemyHeads)
 	// fmt.Println("ATTACKABLE ENEMIES", attackableEnemies)
