@@ -34,8 +34,8 @@ func handleMove(data *MoveRequest) string {
 	enemyHeads := getEnemyHeads(AllSnakes, Us)
 	attackableEnemies := getAttackableEnemies(enemyHeads, 6)
 
-	fmt.Println("ALL ENEMIES", enemyHeads)
-	fmt.Println("ATTACKABLE ENEMIES", attackableEnemies)
+	// fmt.Println("ALL ENEMIES", enemyHeads)
+	// fmt.Println("ATTACKABLE ENEMIES", attackableEnemies)
 
 	fmt.Println(board)
 

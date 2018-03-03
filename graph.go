@@ -30,7 +30,7 @@ func (g *Graph) create(data *MoveRequest) {
 
 	for _, Snake := range data.Snakes {
 		for _, Point := range Snake.Body {
-			if Tail != Point {
+			if Tail != Point && Point != Snake.Body[len(Snake.Body)-1] {
 				g.Grid[Point.Y][Point.X] = 9
 			}
 		}
